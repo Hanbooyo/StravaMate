@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:stravamate}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
+  jackson:
+    time-zone: UTC
+
+strava:
+  client-id: ${STRAVA_CLIENT_ID:}
+  client-secret: ${STRAVA_CLIENT_SECRET:}
+  redirect-uri: ${STRAVA_REDIRECT_URI:http://localhost:8080/auth/strava/callback}
+  verify-token: ${STRAVA_VERIFY_TOKEN:changeme}
+  webhook-callback-url: ${STRAVA_WEBHOOK_CALLBACK_URL:http://localhost:8080/webhook/strava}
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
+
+logging:
+  level:
+    root: INFO
+    com.stravamate: INFO
+
