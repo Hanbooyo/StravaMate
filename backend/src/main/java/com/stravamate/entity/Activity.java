@@ -12,7 +12,8 @@ import java.time.OffsetDateTime;
         @UniqueConstraint(name = "uk_user_activity", columnNames = {"user_id", "strava_activity_id"})
 }, indexes = {
         @Index(name = "idx_activities_user_id", columnList = "user_id"),
-        @Index(name = "idx_activities_strava_activity_id", columnList = "strava_activity_id")
+        @Index(name = "idx_activities_strava_activity_id", columnList = "strava_activity_id"),
+        @Index(name = "idx_activities_route_hash", columnList = "route_hash")
 })
 @Getter
 @Setter
@@ -46,6 +47,20 @@ public class Activity {
     private Double avgSpeed; // m/s
     private Double calories;
 
+    // Optional fields for route-hash approach
+    @Column(name = "start_lat")
+    private Double startLat;
+
+    @Column(name = "start_lng")
+    private Double startLng;
+
+    @Lob
+    @Column(name = "summary_polyline", columnDefinition = "TEXT")
+    private String summaryPolyline;
+
+    @Column(name = "route_hash", length = 64)
+    private String routeHash;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String rawJson;
@@ -53,4 +68,3 @@ public class Activity {
     @UpdateTimestamp
     private Instant updatedAt;
 }
-
