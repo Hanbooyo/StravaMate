@@ -4,6 +4,7 @@ import com.stravamate.dto.ApiResponse;
 import com.stravamate.entity.Activity;
 import com.stravamate.entity.ActivityDailySummary;
 import com.stravamate.entity.ActivityWeeklySummary;
+import com.stravamate.dto.MonthlySummary;
 import com.stravamate.service.ActivityService;
 import com.stravamate.service.SummaryService;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,10 @@ public class ActivityController {
     public ApiResponse<List<ActivityWeeklySummary>> weekly(@RequestParam("user_id") Long userId) {
         return ApiResponse.ok(summaryService.getWeekly(userId));
     }
-}
 
+    @GetMapping("/summary/monthly")
+    public ApiResponse<List<MonthlySummary>> monthly(@RequestParam("user_id") Long userId,
+                                                     @RequestParam(value = "year") int year) {
+        return ApiResponse.ok(summaryService.getMonthly(userId, year));
+    }
+}

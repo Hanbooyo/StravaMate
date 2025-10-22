@@ -3,6 +3,7 @@ package com.stravamate.service;
 import com.stravamate.entity.Activity;
 import com.stravamate.entity.ActivityDailySummary;
 import com.stravamate.entity.ActivityWeeklySummary;
+import com.stravamate.dto.MonthlySummary;
 import com.stravamate.repository.ActivityDailySummaryRepository;
 import com.stravamate.repository.ActivityRepository;
 import com.stravamate.repository.ActivityWeeklySummaryRepository;
@@ -73,5 +74,23 @@ public class SummaryService {
         LocalDate date = odt.atZoneSameInstant(ZoneOffset.UTC).toLocalDate();
         return date.with(DayOfWeek.MONDAY);
     }
-}
 
+    public List<MonthlySummary> getMonthly(Long userId, int year) {
+        LocalDate start = LocalDate.of(year, 1, 1);
+        LocalDate end = LocalDate.of(year, 12, 31);
+        List<ActivityDailySummary> daily = dailyRepo.findAllByUserIdAndDayBetween(userId, start, end);
+
+        Map<YearMonth, List<ActivityDailySummary>> byMonth = daily.stream()
+                .collect(Collectors.groupingBy(d -> YearMonth.from(d.getDay())));
+
+        return byMonth.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> {
+                    double dist = e.getValue().stream().map(d -> Optional.ofNullable(d.getTotalDistance()).orElse(0.0)).mapToDouble(Double::doubleValue).sum();
+                    int time = e.getValue().stream().map(d -> Optional.ofNullable(d.getTotalMovingTime()).orElse(0)).mapToInt(Integer::intValue).sum();
+                    double elev = e.getValue().stream().map(d -> Optional.ofNullable(d.getTotalElevGain()).orElse(0.0)).mapToDouble(Double::doubleValue).sum();
+                    return new MonthlySummary(e.getKey().toString(), dist, time, elev);
+                })
+                .collect(Collectors.toList());
+    }
+}
